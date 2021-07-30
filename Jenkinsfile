@@ -16,11 +16,18 @@ pipeline {
 				echo 'Build completed' }	
 	 		}
 		
-		stage('image'){
+		stage('image build'){
 			steps{ echo '2. BUILDING DOCKER image'
 				sh "docker build -t position-simulator:${commit_id} ."
 				echo 'Build completed'}	
 			}
+stage ("image push") {
+            steps {
+                echo 'pushing docker image'
+                sh "docker push 2alinfo7/position-simulator:${commit_id}"
+                echo 'docker image pushed'
+            }
+        }
 		stage('deploy'){
 			steps{ echo '3. DEPLOYMENT to kubernetes'
 				sh "sed -i -r 's|richardchesterwood/k8s-fleetman-webapp-angular:release2|position-simulator:${commit_id}|' workloads.yaml"
